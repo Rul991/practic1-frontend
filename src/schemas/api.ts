@@ -1,4 +1,4 @@
-import { any, z } from "zod"
+import { z } from "zod"
 
 export const questionTypeSchema = z.enum([
     "single_choice",
@@ -33,7 +33,7 @@ export const loginResponseSchema = z.object({
     expires_at: z.iso.datetime(),
 })
 
-export const registerResponseSchema = any()
+export const registerResponseSchema = loginResponseSchema
 
 export const newOptionSchema = z.object({
     text: z.string(),
@@ -164,10 +164,21 @@ export const userBriefDtoSchema = z.object({
     name: z.string(),
 })
 
+export const answerDetailSchema = z.object({
+    question_id: z.number().int(),
+    question_text: z.string().optional(),
+    option_id: z.number().int().optional(),
+    option_text: z.string().optional(),
+    text_value: z.string().optional(),
+    numeric_value: z.number().optional(),
+    bool_value: z.boolean().optional(),
+})
+
 export const responseListItemSchema = z.object({
     response_id: z.number().int(),
     created_at: z.iso.datetime(),
     user: userBriefDtoSchema.optional(),
+    answers: z.array(answerDetailSchema).nullish(),
 })
 
 export const responseListResponseSchema = z.object({

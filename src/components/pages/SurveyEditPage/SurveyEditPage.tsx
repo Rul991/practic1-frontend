@@ -93,7 +93,7 @@ const SurveyEditPage = () => {
                         <span>Анонимный опрос</span>
                     </label>
                     <label className={styles.checkbox}>
-                        <input type="checkbox" {...register('only_one_response')} disabled={true} />
+                        <input type="checkbox" {...register('only_one_response')} />
                         <span>Только один ответ от пользователя</span>
                     </label>
                 </div>

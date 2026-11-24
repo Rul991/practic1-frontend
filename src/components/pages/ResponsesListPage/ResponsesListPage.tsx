@@ -1,15 +1,34 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router'
-import { responseListResponseSchema, responseListItemSchema } from '../../../schemas/api'
+import {
+    responseListResponseSchema,
+    responseListItemSchema,
+    answerDetailSchema,
+} from '../../../schemas/api'
 import FetchUtils from '../../../utils/fetch/FetchUtils'
 import { Button } from '../../elements/button/Button'
+import { PageHeader } from '../../common/PageHeader'
+import { EmptyState } from '../../common/EmptyState'
 import styles from './ResponsesListPage.module.less'
 import toast from 'react-hot-toast'
 import z from 'zod'
 
 type ResponseItem = z.infer<typeof responseListItemSchema>
+type AnswerDetail = z.infer<typeof answerDetailSchema>
 
 const LIMIT = 20
+
+const getQuestionLabel = (a: AnswerDetail) =>
+    a.question_text || `Вопрос #${a.question_id}`
+
+const formatAnswer = (a: AnswerDetail): string => {
+    if (a.option_text !== undefined && a.option_text !== null) return a.option_text
+    if (a.text_value !== undefined && a.text_value !== null) return a.text_value
+    if (a.numeric_value !== undefined && a.numeric_value !== null) return String(a.numeric_value)
+    if (a.bool_value !== undefined && a.bool_value !== null) return a.bool_value ? 'Да' : 'Нет'
+    if (a.option_id !== undefined) return `Вариант #${a.option_id}`
+    return '—'
+}
 
 const ResponsesListPage = () => {
     const { id } = useParams<{ id: string }>()
@@ -65,69 +84,84 @@ const ResponsesListPage = () => {
     if (isForbidden) {
         return (
             <div className={styles.wrapper}>
-                <div className={styles.header}>
-                    <h1 className={styles.title}>Ответы на опрос</h1>
-                    <Link to="/">
-                        <Button>← Назад к списку</Button>
-                    </Link>
-                </div>
-                <div className={styles.forbidden}>
-                    <div className={styles.forbiddenIcon}>🔒</div>
-                    <h2 className={styles.forbiddenTitle}>Список ответов недоступен</h2>
-                    <p className={styles.forbiddenText}>
-                        Этот опрос является анонимным. Данные об авторах ответов не сохраняются,
-                        поэтому просмотр списка ответов запрещён.
-                    </p>
-                    <Link to={`/surveys/${id}/results`}>
-                        <Button>Посмотреть статистику</Button>
-                    </Link>
-                </div>
+                <PageHeader
+                    title="Ответы на опрос"
+                    actions={
+                        <Link to="/">
+                            <Button>← Назад к списку</Button>
+                        </Link>
+                    }
+                />
+                <EmptyState
+                    icon="🔒"
+                    title="Список ответов недоступен"
+                    description="Этот опрос является анонимным. Данные об авторах ответов не сохраняются, поэтому просмотр списка ответов запрещён."
+                    action={
+                        <Link to={`/surveys/${id}/results`}>
+                            <Button>Посмотреть статистику</Button>
+                        </Link>
+                    }
+                />
             </div>
         )
     }
 
     return (
         <div className={styles.wrapper}>
-            <div className={styles.header}>
-                <h1 className={styles.title}>Ответы на опрос</h1>
-                <div className={styles.headerActions}>
-                    <Link to={`/surveys/${id}/results`}>
-                        <Button>Статистика</Button>
-                    </Link>
-                    <Link to="/">
-                        <Button>← Назад</Button>
-                    </Link>
-                </div>
-            </div>
+            <PageHeader
+                title="Ответы на опрос"
+                actions={
+                    <>
+                        <Link to={`/surveys/${id}/results`}>
+                            <Button>Статистика</Button>
+                        </Link>
+                        <Link to="/">
+                            <Button>← Назад</Button>
+                        </Link>
+                    </>
+                }
+            />
 
             {responses.length === 0 ? (
-                <div className={styles.empty}>
-                    <p>Пока нет ни одного ответа</p>
-                </div>
+                <EmptyState title="Пока нет ни одного ответа" />
             ) : (
                 <>
-                    <div className={styles.table}>
-                        <div className={styles.tableHeader}>
-                            <span className={styles.colIndex}>#</span>
-                            <span className={styles.colDate}>Дата ответа</span>
-                            <span className={styles.colUser}>Пользователь</span>
-                        </div>
+                    <div className={styles.list}>
                         {responses.map((resp, idx) => (
-                            <div key={resp.response_id} className={styles.tableRow}>
-                                <span className={styles.colIndex}>{offset + idx + 1}</span>
-                                <span className={styles.colDate}>{formatDate(resp.created_at)}</span>
-                                <span className={styles.colUser}>
-                                    {resp.user ? (
-                                        <span className={styles.userName}>
-                                            {resp.user.name}
-                                            <span className={styles.userLogin}>
-                                                @{resp.user.login}
-                                            </span>
-                                        </span>
-                                    ) : (
-                                        <span className={styles.anonymous}>Анонимно</span>
-                                    )}
-                                </span>
+                            <div key={resp.response_id} className={styles.card}>
+                                <div className={styles.cardHeader}>
+                                    <span className={styles.cardIndex}>#{offset + idx + 1}</span>
+                                    <span className={styles.cardDate}>
+                                        {formatDate(resp.created_at)}
+                                    </span>
+                                    <span className={styles.cardUser}>
+                                        {resp.user ? (
+                                            <>
+                                                {resp.user.name}{' '}
+                                                <span className={styles.userLogin}>
+                                                    @{resp.user.login}
+                                                </span>
+                                            </>
+                                        ) : (
+                                            <span className={styles.anonymous}>Анонимно</span>
+                                        )}
+                                    </span>
+                                </div>
+
+                                {resp.answers && resp.answers.length > 0 && (
+                                    <div className={styles.answers}>
+                                        {resp.answers.map((a, i) => (
+                                            <div key={i} className={styles.answerRow}>
+                                                <span className={styles.answerQuestion}>
+                                                    {getQuestionLabel(a)}
+                                                </span>
+                                                <span className={styles.answerValue}>
+                                                    {formatAnswer(a)}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>

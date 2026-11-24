@@ -1,11 +1,11 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useNavigate } from 'react-router'
 import { Button } from '../../elements/button/Button'
 import styles from './SettingsPage.module.less'
 import toast from 'react-hot-toast'
 import z from 'zod'
 import Config from '../../../utils/config/Config'
-import { Link } from 'react-router'
 
 const settingsFormSchema = z.object({
     baseUrl: z.string().min(1, "Базовый URL не может быть пустым"),
@@ -14,10 +14,11 @@ const settingsFormSchema = z.object({
 type FormData = z.infer<typeof settingsFormSchema>
 
 const SettingsPage = () => {
+    const navigate = useNavigate()
+
     const {
         register,
         handleSubmit,
-        reset,
         formState: { errors, isSubmitting },
     } = useForm<FormData>({
         resolver: zodResolver(settingsFormSchema),
@@ -32,10 +33,16 @@ const SettingsPage = () => {
             Config.update({ baseUrl: normalizedUrl })
 
             toast.success('Настройки сохранены!')
-            reset({ baseUrl: Config.get('baseUrl') })
-        } catch (e) {
+
+            // Возвращаемся на предыдущую страницу (login/register)
+            navigate(-1)
+        } catch {
             toast.error('Неверный формат URL. Используйте полный адрес (https://...) или "/"')
         }
+    }
+
+    const handleBack = () => {
+        navigate(-1)
     }
 
     return (
@@ -64,8 +71,8 @@ const SettingsPage = () => {
                         {isSubmitting ? 'Сохранение...' : 'Сохранить настройки'}
                     </Button>
 
-                    <Button disabled={isSubmitting}>
-                        <Link to={'/'}>Назад</Link>
+                    <Button type="button" onClick={handleBack} disabled={isSubmitting}>
+                        Назад
                     </Button>
                 </div>
             </form>

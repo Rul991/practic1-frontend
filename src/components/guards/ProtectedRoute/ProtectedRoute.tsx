@@ -15,7 +15,10 @@ const ProtectedRoute = ({ children, redirectTo = "/login" }: ProtectedRouteProps
     }
 
     if (!user) {
-        return <Navigate to={redirectTo} state={{ from: location }} replace />
+        const target = `${redirectTo}?redirect=${encodeURIComponent(
+            location.pathname + location.search
+        )}`
+        return <Navigate to={target} state={{ from: location }} replace />
     }
 
     return <>{children}</>

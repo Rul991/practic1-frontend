@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate, useLocation } from 'react-router'
+import { useNavigate, useLocation, useSearchParams } from 'react-router'
 import { useAuth } from '../../../contexts/AuthContext'
 import { loginRequestSchema } from '../../../schemas/api'
 import { Button } from '../../elements/button/Button'
@@ -14,8 +14,10 @@ const LoginPage = () => {
     const { login } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
-    
-    const from = (location.state as any)?.from?.pathname || '/'
+    const [searchParams] = useSearchParams()
+
+    const redirectParam = searchParams.get('redirect')
+    const from = redirectParam || (location.state as any)?.from?.pathname || '/'
 
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
         resolver: zodResolver(loginRequestSchema),
@@ -29,14 +31,18 @@ const LoginPage = () => {
         }
     }
 
+    const registerHref = redirectParam
+        ? `/register?redirect=${encodeURIComponent(redirectParam)}`
+        : '/register'
+
     return (
         <div className={styles.container}>
             <h2 className={styles.title}>Вход в систему</h2>
             <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
                 <div className={styles.field}>
                     <label>Логин</label>
-                    <input 
-                        {...register('login')} 
+                    <input
+                        {...register('login')}
                         className={errors.login ? styles.errorInput : ''}
                         disabled={isSubmitting}
                     />
@@ -45,9 +51,9 @@ const LoginPage = () => {
 
                 <div className={styles.field}>
                     <label>Пароль</label>
-                    <input 
-                        type="password" 
-                        {...register('password')} 
+                    <input
+                        type="password"
+                        {...register('password')}
                         className={errors.password ? styles.errorInput : ''}
                         disabled={isSubmitting}
                     />
@@ -59,7 +65,7 @@ const LoginPage = () => {
                 </Button>
 
                 <p className={styles.switchLink}>
-                    Нет аккаунта? <Link to="/register">Зарегистрироваться</Link>
+                    Нет аккаунта? <Link to={registerHref}>Зарегистрироваться</Link>
                 </p>
 
                 <p className={styles.apiSettingsLink}>

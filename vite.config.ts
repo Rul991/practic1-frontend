@@ -25,7 +25,7 @@ export default defineConfig(() => ({
     },
     proxy: {
       '/api/v1': {
-        target: 'https://rulvps.duckdns.org/surveys',
+        target: 'https://localhost:1420',
         changeOrigin: true
       }
     }

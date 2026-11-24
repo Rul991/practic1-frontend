@@ -5,7 +5,31 @@
     background-color: @bg-app;
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background-color: @bg-surface;
+    padding: 1rem 2rem;
+    display: flex;
     align-items: center;
+    border-bottom: 1px solid @bg-elevated;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: @accent-main;
+    text-decoration: none;
+
+    &:hover {
+        color: @accent-hover;
+    }
+}
+
+.content {
+    flex: 1;
+    display: flex;
     justify-content: center;
     padding: 1.5rem;
 }
@@ -14,4 +38,5 @@
     .capsule-accent();
     width: 100%;
     max-width: 480px;
+    margin: auto;
 }

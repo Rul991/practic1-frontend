@@ -6,6 +6,7 @@ import { Button } from '../../elements/button/Button'
 import styles from './SurveyResultsPage.module.less'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
+import { PageHeader } from '../../common/PageHeader'
 
 type Results = z.infer<typeof surveyResultsSchema>
 type QuestionResult = z.infer<typeof questionResultSchema>
@@ -65,6 +66,7 @@ const SurveyResultsPage = () => {
             const d = data as { true: number; false: number }
             const total = d.true + d.false
             const truePct = total > 0 ? (d.true / total) * 100 : 0
+            const falsePct = total > 0 ? (d.false / total) * 100 : 0
             return (
                 <div className={styles.boolStats}>
                     <div className={styles.boolRow}>
@@ -77,9 +79,9 @@ const SurveyResultsPage = () => {
                     <div className={styles.boolRow}>
                         <span>Нет: {d.false}</span>
                         <div className={styles.progressBar}>
-                            <div className={styles.progressFill} style={{ width: `${100 - truePct}%` }} />
+                            <div className={styles.progressFill} style={{ width: `${falsePct}%` }} />
                         </div>
-                        <span>{(100 - truePct).toFixed(1)}%</span>
+                        <span>{falsePct.toFixed(1)}%</span>
                     </div>
                 </div>
             )
@@ -117,12 +119,19 @@ const SurveyResultsPage = () => {
 
     return (
         <div className={styles.wrapper}>
-            <div className={styles.header}>
-                <h1 className={styles.title}>Результаты опроса</h1>
-                <Link to="/">
-                    <Button>← Назад к списку</Button>
-                </Link>
-            </div>
+            <PageHeader
+                title="Результаты опроса"
+                actions={
+                    <>
+                        <Link to={`/surveys/${id}/responses`}>
+                            <Button>Ответы</Button>
+                        </Link>
+                        <Link to="/">
+                            <Button>← Назад к списку</Button>
+                        </Link>
+                    </>
+                }
+            />
 
             <div className={styles.summary}>
                 <span>Всего ответов: <strong>{results.total_responses}</strong></span>

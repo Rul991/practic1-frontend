@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from 'react-router'
@@ -7,6 +8,7 @@ import { Button } from '../../elements/button/Button'
 import styles from './SurveyBuilderPage.module.less'
 import toast from 'react-hot-toast'
 import z from 'zod'
+import { PageHeader } from '../../common/PageHeader'
 
 type FormData = z.infer<typeof createSurveyRequestSchema>
 
@@ -18,6 +20,9 @@ const QUESTION_TYPES = [
     { value: 'boolean', label: 'Да/Нет' },
 ] as const
 
+const isChoiceType = (type: string) =>
+    type === 'single_choice' || type === 'multiple_choice'
+
 const SurveyBuilderPage = () => {
     const navigate = useNavigate()
 
@@ -26,6 +31,7 @@ const SurveyBuilderPage = () => {
         control,
         handleSubmit,
         watch,
+        setValue,
         formState: { errors, isSubmitting },
     } = useForm({
         resolver: zodResolver(createSurveyRequestSchema),
@@ -44,14 +50,33 @@ const SurveyBuilderPage = () => {
     })
 
     const onSubmit = async (data: FormData) => {
-        const result = await FetchUtils.request<void>({
+        const cleanedData = {
+            ...data,
+            questions: data.questions.map((q) => ({
+                ...q,
+                options: isChoiceType(q.type) ? q.options : [],
+            })),
+        }
+
+        const result = await FetchUtils.request<{ link?: string }>({
             path: 'surveys',
             method: 'POST',
-            body: data,
+            body: cleanedData,
         })
 
         if (result.error === undefined) {
-            toast.success('Опрос создан!')
+            const link = result.data?.link
+            if (link) {
+                const fullUrl = `${window.location.origin}/s/${link}`
+                try {
+                    await navigator.clipboard.writeText(fullUrl)
+                    toast.success('Опрос создан! Ссылка скопирована в буфер обмена.')
+                } catch {
+                    toast.success('Опрос создан! Не удалось скопировать ссылку автоматически.')
+                }
+            } else {
+                toast.success('Опрос создан!')
+            }
             navigate('/')
         } else {
             toast.error(result.error.message)
@@ -59,19 +84,19 @@ const SurveyBuilderPage = () => {
     }
 
     const addQuestion = () => {
+        const maxPos = questionFields.reduce((m, f) => Math.max(m, f.position ?? 0), -1)
         appendQuestion({
             text: '',
             type: 'single_choice',
             is_required: false,
-            position: questionFields.length,
+            position: maxPos + 1,
             options: [{ text: '', position: 0 }],
         })
     }
 
-
     return (
         <div className={styles.wrapper}>
-            <h1 className={styles.title}>Создание опроса</h1>
+            <PageHeader title="Создание опроса" />
 
             <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
                 <div className={styles.section}>
@@ -117,6 +142,7 @@ const SurveyBuilderPage = () => {
                         register={register}
                         errors={errors}
                         watch={watch}
+                        setValue={setValue}
                         onRemove={() => removeQuestion(qIndex)}
                     />
                 ))}
@@ -141,17 +167,34 @@ type QuestionBlockProps = {
     register: any
     errors: any
     watch: any
+    setValue: any
     onRemove: () => void
 }
 
-const QuestionBlock = ({ index, control, register, errors, watch, onRemove }: QuestionBlockProps) => {
+const QuestionBlock = ({
+    index,
+    control,
+    register,
+    errors,
+    watch,
+    setValue,
+    onRemove,
+}: QuestionBlockProps) => {
     const questionType = watch(`questions.${index}.type`)
-    const isChoice = questionType === 'single_choice' || questionType === 'multiple_choice'
+    const isChoice = isChoiceType(questionType)
 
     const { fields: optionFields, append: appendOption, remove: removeOption } = useFieldArray({
         control,
         name: `questions.${index}.options`,
     })
+
+    // Если тип переключили на "text"/"number"/"boolean" — сбрасываем options,
+    // чтобы они не валились в валидации и не путали пользователя
+    useEffect(() => {
+        if (!isChoice) {
+            setValue(`questions.${index}.options`, [], { shouldValidate: false })
+        }
+    }, [isChoice, index, setValue])
 
     const addOption = () => {
         appendOption({ text: '', position: optionFields.length })

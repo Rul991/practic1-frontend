@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useLocation, useNavigate } from 'react-router'
+import { useLocation, useNavigate, useSearchParams } from 'react-router'
 import { useAuth } from '../../../contexts/AuthContext'
 import { registerRequestSchema } from '../../../schemas/api'
 import { Button } from '../../elements/button/Button'
@@ -14,7 +14,10 @@ const RegisterPage = () => {
     const { register: registerUser } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
-    const from = location.state?.from?.pathname || '/'
+    const [searchParams] = useSearchParams()
+
+    const redirectParam = searchParams.get('redirect')
+    const from = redirectParam || location.state?.from?.pathname || '/'
 
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
         resolver: zodResolver(registerRequestSchema),
@@ -27,6 +30,10 @@ const RegisterPage = () => {
             navigate(from, { replace: true })
         }
     }
+
+    const loginHref = redirectParam
+        ? `/login?redirect=${encodeURIComponent(redirectParam)}`
+        : '/login'
 
     return (
         <div className={styles.container}>
@@ -55,7 +62,7 @@ const RegisterPage = () => {
                 </Button>
 
                 <p className={styles.switchLink}>
-                    Уже есть аккаунт? <Link to="/login">Войти</Link>
+                    Уже есть аккаунт? <Link to={loginHref}>Войти</Link>
                 </p>
 
                 <p className={styles.apiSettingsLink}>
