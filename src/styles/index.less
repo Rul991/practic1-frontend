@@ -1,0 +1,30 @@
+@import "@styles/utils/colors.less";
+
+@font-face {
+    font-family: Manrope;
+    src: url("/assets/fonts/Manrope.ttf");
+}
+
+* {
+    box-sizing: border-box;
+    font-family: Manrope;
+}
+
+body, html, #root {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100vh;
+}
+
+body {
+    background: @bg-app;
+    color: @text-primary;
+}
+
+body * {
+    transition: all 0.3s ease-in-out;
+}

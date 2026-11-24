@@ -1,0 +1,149 @@
+@import "@styles/utils/colors";
+
+.wrapper {
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.header {
+    margin-bottom: 2rem;
+}
+
+.title {
+    color: @text-primary;
+    font-size: 2rem;
+    margin: 0 0 0.5rem 0;
+}
+
+.description {
+    color: @text-secondary;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.questionCard {
+    background-color: @bg-surface;
+    border: 1px solid @bg-elevated;
+    border-radius: 1rem;
+    padding: 1.5rem;
+
+    &.hasError {
+        border-color: #ff4d4f;
+    }
+}
+
+.questionTitle {
+    color: @text-primary;
+    font-size: 1.15rem;
+    margin: 0 0 1rem 0;
+}
+
+.required {
+    color: #ff4d4f;
+}
+
+input, textarea {
+    width: 100%;
+    background-color: @bg-elevated;
+    border: 1px solid @bg-elevated;
+    border-radius: 0.5rem;
+    padding: 0.8rem 1rem;
+    color: @text-primary;
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    box-sizing: border-box;
+
+    &:focus { border-color: @accent-main; }
+}
+
+.inputError { border-color: #ff4d4f !important; }
+
+.boolOptions, .options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.radioLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: @text-primary;
+    cursor: pointer;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    transition: background 0.2s;
+    border: 1px solid transparent;
+
+    &:hover { 
+        background-color: @bg-elevated; 
+    }
+
+    &.selected {
+        background-color: @bg-elevated;
+        border-color: @accent-main;
+    }
+
+    input {
+        width: auto;
+        accent-color: @accent-main;
+        cursor: pointer;
+    }
+
+    span {
+        user-select: none;
+    }
+}
+
+.errorText {
+    color: #ff4d4f;
+    font-size: 0.85rem;
+    display: block;
+    margin-top: 0.5rem;
+    font-weight: 500;
+}
+
+.globalError {
+    color: #ff4d4f;
+    padding: 0.75rem;
+    background: rgba(255, 77, 79, 0.1);
+    border-radius: 0.5rem;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.loading, .error {
+    text-align: center;
+    padding: 3rem;
+    color: @text-secondary;
+    font-size: 1.1rem;
+}
+
+.success {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: @text-primary;
+
+    h2 {
+        color: @accent-main;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    p {
+        color: @text-secondary;
+        font-size: 1.1rem;
+    }
+}

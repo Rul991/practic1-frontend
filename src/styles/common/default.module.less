@@ -1,0 +1,22 @@
+@import "../utils/colors.less";
+
+.capsule-accent {
+    border: 2px solid @accent-main;
+    border-radius: 7rem;
+    background-color: @bg-surface;
+    padding: 2rem;
+
+    &:hover {
+        border-color: @accent-hover;
+    }
+}
+
+.centered-accent-ring(@width, @height) {
+    min-width: auto;
+    min-height: auto;
+
+    .capsule-accent();
+    margin: auto;
+    width: @width;
+    height: @height;
+}

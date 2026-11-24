@@ -1,0 +1,76 @@
+@import "@styles/utils/colors";
+
+.wrapper {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.title {
+    color: @text-primary;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.label {
+    color: @text-secondary;
+    font-size: 0.9rem;
+}
+
+input, textarea {
+    background-color: @bg-elevated;
+    border: 1px solid @bg-elevated;
+    border-radius: 0.5rem;
+    padding: 0.8rem 1rem;
+    color: @text-primary;
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+
+    &:focus { border-color: @accent-main; }
+}
+
+.inputError { border-color: #ff4d4f !important; }
+.errorText { color: #ff4d4f; font-size: 0.8rem; }
+
+.flags {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: @text-secondary;
+    cursor: pointer;
+
+    input {
+        width: auto;
+        accent-color: @accent-main;
+    }
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.loading {
+    text-align: center;
+    padding: 3rem;
+    color: @text-secondary;
+}
