@@ -33,8 +33,6 @@ const SettingsPage = () => {
             Config.update({ baseUrl: normalizedUrl })
 
             toast.success('Настройки сохранены!')
-
-            // Возвращаемся на предыдущую страницу (login/register)
             navigate(-1)
         } catch {
             toast.error('Неверный формат URL. Используйте полный адрес (https://...) или "/"')

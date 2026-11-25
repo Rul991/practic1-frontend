@@ -46,26 +46,24 @@ export default class FetchUtils {
         return baseUrlObj
     }
 
-    /** Превращает код ошибки в понятный пользователю текст */
     private static _getErrorMessage(code: string, serverMessage: string): string {
-        // Для ошибок валидации важнее именно серверное сообщение
         if (code === 'VALIDATION_FAILED' && serverMessage) {
             return serverMessage
         }
 
-        const messages: Record<string, string> = {
-            VALIDATION_FAILED: 'Проверьте правильность заполнения данных.',
-            UNAUTHORIZED: serverMessage || 'Требуется авторизация. Войдите в систему заново.',
-            FORBIDDEN: serverMessage || 'У вас нет прав для выполнения этого действия.',
-            NOT_FOUND: serverMessage || 'Запрашиваемый ресурс не найден.',
-            CONFLICT: serverMessage || 'Конфликт данных. Возможно, действие уже выполнено.',
-            DB_ERROR: 'Ошибка базы данных. Попробуйте позже.',
-            INTERNAL: 'Внутренняя ошибка сервера. Попробуйте позже.',
-            NETWORK_ERROR: 'Ошибка сети. Проверьте подключение к интернету и настройки в разделе «Настройки подключения».',
-            UNKNOWN: serverMessage || 'Произошла неизвестная ошибка.',
+        const messages = {
+            validation_failed: 'Проверьте правильность заполнения данных.',
+            unauthorized: serverMessage || 'Требуется авторизация. Войдите в систему заново.',
+            forbidden: serverMessage || 'У вас нет прав для выполнения этого действия.',
+            not_found: serverMessage || 'Запрашиваемый ресурс не найден.',
+            conflict: serverMessage || 'Конфликт данных. Возможно, действие уже выполнено.',
+            db_error: 'Ошибка базы данных. Попробуйте позже.',
+            internal: 'Внутренняя ошибка сервера. Попробуйте позже.',
+            network_error: 'Ошибка сети. Проверьте подключение к интернету и настройки в разделе «Настройки подключения».',
+            unknown: serverMessage || 'Произошла неизвестная ошибка.',
         }
 
-        return messages[code] ?? serverMessage ?? 'Произошла ошибка.'
+        return messages[code.toLowerCase() as keyof typeof messages] ?? messages.unknown
     }
 
     static async request<T>({ path, method = 'GET', body, schema }: FetchOptions<T>): Promise<FetchResult<T>> {

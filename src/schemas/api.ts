@@ -33,7 +33,7 @@ export const loginResponseSchema = z.object({
     expires_at: z.iso.datetime(),
 })
 
-export const registerResponseSchema = loginResponseSchema
+export const registerResponseSchema = z.any()
 
 export const newOptionSchema = z.object({
     text: z.string(),
@@ -182,7 +182,7 @@ export const responseListItemSchema = z.object({
 })
 
 export const responseListResponseSchema = z.object({
-    items: z.array(responseListItemSchema),
+    items: z.array(responseListItemSchema).default([]),
 })
 
 export const choiceStatSchema = z.object({

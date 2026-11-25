@@ -188,8 +188,6 @@ const QuestionBlock = ({
         name: `questions.${index}.options`,
     })
 
-    // Если тип переключили на "text"/"number"/"boolean" — сбрасываем options,
-    // чтобы они не валились в валидации и не путали пользователя
     useEffect(() => {
         if (!isChoice) {
             setValue(`questions.${index}.options`, [], { shouldValidate: false })
