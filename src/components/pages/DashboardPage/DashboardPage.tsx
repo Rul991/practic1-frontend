@@ -9,6 +9,7 @@ import { ConfirmModal } from '../../common/ConfirmModal'
 import styles from './DashboardPage.module.less'
 import toast from 'react-hot-toast'
 import z from 'zod'
+import LinkUtils from '../../../utils/string/LinkUtils'
 
 type Survey = z.infer<typeof surveySummaryDtoSchema>
 
@@ -67,7 +68,7 @@ const DashboardPage = () => {
     }
 
     const copyLink = (link: string) => {
-        const fullUrl = `${window.location.origin}/s/${link}`
+        const fullUrl = LinkUtils.getShowable(link)
         navigator.clipboard.writeText(fullUrl)
         toast.success('Ссылка скопирована!')
     }
@@ -103,7 +104,7 @@ const DashboardPage = () => {
             <div className={styles.directLink}>
                 <input
                     type="text"
-                    placeholder={`Вставьте ссылку на опрос, например: ${location.origin}/s/abc123`}
+                    placeholder={`Вставьте ссылку на опрос, например: ${LinkUtils.getShowable('abc123')}`}
                     value={directLink}
                     onChange={(e) => setDirectLink(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleGoToLink()}

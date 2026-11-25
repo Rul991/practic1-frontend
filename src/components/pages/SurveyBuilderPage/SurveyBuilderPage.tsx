@@ -9,6 +9,7 @@ import styles from './SurveyBuilderPage.module.less'
 import toast from 'react-hot-toast'
 import z from 'zod'
 import { PageHeader } from '../../common/PageHeader'
+import LinkUtils from '../../../utils/string/LinkUtils'
 
 type FormData = z.infer<typeof createSurveyRequestSchema>
 
@@ -67,7 +68,7 @@ const SurveyBuilderPage = () => {
         if (result.error === undefined) {
             const link = result.data?.link
             if (link) {
-                const fullUrl = `${window.location.origin}/s/${link}`
+                const fullUrl = LinkUtils.getShowable(link)
                 try {
                     await navigator.clipboard.writeText(fullUrl)
                     toast.success('Опрос создан! Ссылка скопирована в буфер обмена.')
